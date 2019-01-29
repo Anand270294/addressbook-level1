@@ -14,14 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 /*
  * NOTE : =============================================================
@@ -144,6 +137,18 @@ public class AddressBook {
     private static final int PERSON_DATA_INDEX_NAME = 0;
     private static final int PERSON_DATA_INDEX_PHONE = 1;
     private static final int PERSON_DATA_INDEX_EMAIL = 2;
+
+    /*  These set of strings is used to hash a person email/phone
+     *  This is to improve the speed at which the a person's detail
+     *  can be found.
+     */
+    private static final String PERSON_PROPERTY_NAME = "name";
+    private static final String PERSON_PROPERTY_EMAIL = "email";
+    private static final String PERSON_PROPERTY_PHONE = "phone";
+
+    /*  Using enum to combine all the property of a person's details
+     */
+    private enum PersonProperty {NAME, EMAIL, PHONE};
 
     /**
      * The number of data elements for a single person.
@@ -424,9 +429,10 @@ public class AddressBook {
             return getMessageForInvalidCommandInput(COMMAND_ADD_WORD, getUsageInfoForAddCommand());
         }
 
-        // add the person as specified
+        // add the person as specified and also hash the person's details
         final String[] personToAdd = decodeResult.get();
         addPersonToAddressBook(personToAdd);
+        hashPersonDetails(personToAdd);
         return getMessageForSuccessfulAddPerson(personToAdd);
     }
 
@@ -1162,6 +1168,25 @@ public class AddressBook {
      */
     private static ArrayList<String> splitByWhitespace(String toSplit) {
         return new ArrayList<>(Arrays.asList(toSplit.trim().split("\\s+")));
+    }
+
+    /**
+     * Hashes a person's details into a hashMap
+     *
+     * @param person String Array
+     */
+    private static void hashPersonDetails(String[] person){
+        HashMap<String,String> personHash = new HashMap<>();
+        personHash.put(PERSON_PROPERTY_NAME,person[PERSON_DATA_INDEX_NAME]);
+        personHash.put(PERSON_PROPERTY_PHONE,person[PERSON_DATA_INDEX_PHONE]);
+        personHash.put(PERSON_PROPERTY_EMAIL,person[PERSON_DATA_INDEX_EMAIL]);
+    }
+
+    private static void hashPersonEnum(String[] person){
+        HashMap<PersonProperty,String> personEnum = new HashMap<>();
+        personEnum.put(PersonProperty.NAME,person[PERSON_DATA_INDEX_NAME]);
+        personEnum.put(PersonProperty.PHONE,person[PERSON_DATA_INDEX_PHONE]);
+        personEnum.put(PersonProperty.EMAIL,person[PERSON_DATA_INDEX_EMAIL]);
     }
 
 }
