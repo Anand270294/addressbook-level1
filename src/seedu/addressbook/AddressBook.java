@@ -212,15 +212,25 @@ public class AddressBook {
      */
 
     public static void main(String[] args) {
+        initialLoad(args);
+        while (true) {
+            run();
+        }
+    }
+    /* Refactored the main() into 2 : Initial load & run
+     */
+
+    public static void initialLoad(String[] args){
         showWelcomeMessage();
         processProgramArgs(args);
         loadDataFromStorage();
-        while (true) {
-            String userCommand = getUserInput();
-            echoUserCommand(userCommand);
-            String feedback = executeCommand(userCommand);
-            showResultToUser(feedback);
-        }
+    }
+
+    public static void run(){
+        String userCommand = getUserInput();
+        echoUserCommand(userCommand);
+        String feedback = executeCommand(userCommand);
+        showResultToUser(feedback);
     }
 
     /*
@@ -963,10 +973,11 @@ public class AddressBook {
     private static boolean isPersonDataExtractableFrom(String personData) {
         final String matchAnyPersonDataPrefix = PERSON_DATA_PREFIX_PHONE + '|' + PERSON_DATA_PREFIX_EMAIL;
         final String[] splitArgs = personData.trim().split(matchAnyPersonDataPrefix);
-        return splitArgs.length == 3 // 3 arguments
+        boolean isExtractable = splitArgs.length == 3 // 3 arguments
                 && !splitArgs[0].isEmpty() // non-empty arguments
                 && !splitArgs[1].isEmpty()
                 && !splitArgs[2].isEmpty();
+        return isExtractable;
     }
 
     /**
