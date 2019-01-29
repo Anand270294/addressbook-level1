@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static java.lang.Character.*;
+
 /*
  * NOTE : =============================================================
  * This class header comment below is brief because details of how to
@@ -440,7 +442,9 @@ public class AddressBook {
         }
 
         // add the person as specified and also hash the person's details
+        // Formated person's name to first letter always being Upper case and rest is lowercase
         final String[] personToAdd = decodeResult.get();
+        personToAdd[PERSON_DATA_INDEX_NAME] = formatName(personToAdd[PERSON_DATA_INDEX_NAME]);
         addPersonToAddressBook(personToAdd);
         hashPersonDetails(personToAdd);
         return getMessageForSuccessfulAddPerson(personToAdd);
@@ -466,10 +470,34 @@ public class AddressBook {
      * @return feedback display message for the operation result
      */
     private static String executeFindPersons(String commandArgs) {
-        final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
+        String caseInsensitiveName = formatName(commandArgs);
+        final Set<String> keywords = extractKeywordsFromFindPersonArgs(caseInsensitiveName);
         final ArrayList<String[]> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
         showToUser(personsFound);
         return getMessageForPersonsDisplayedSummary(personsFound);
+    }
+
+    /**
+     * Reformats the name to so that the searches can be case insensitive
+     * @param name name of the person's name to be reformatted
+     * @return formattedName a standard way of spelling a name throughout this code
+     */
+    private static String formatName(String name){
+        name = name.toLowerCase();
+        char[] nameArray = name.toCharArray();
+
+        for(int i = 0; i < name.length(); i++ ){
+            if(i == 0){ nameArray[i] = toUpperCase(nameArray[i]);}
+            if(i+1<name.length()) {
+                if (isLetter(nameArray[i + 1]) && isWhitespace(nameArray[i])) {
+                    nameArray[i + 1] = toUpperCase(nameArray[i + 1]);
+                }
+            }
+
+        }
+        String formatedName = new String(nameArray);
+
+        return formatedName;
     }
 
     /**
@@ -1163,12 +1191,12 @@ public class AddressBook {
     /**
      * Removes sign(p/, d/, etc) from parameter string
      *
-     * @param s  Parameter as a string
-     * @param sign  Parameter sign to be removed
-     * @return  string without the sign
+     * @param fullString  Parameter as a string
+     * @param prefix  Parameter prefix to be removed
+     * @return  string without the prefix
      */
-    private static String removePrefixSign(String s, String sign) {
-        return s.replace(sign, "");
+    private static String removePrefixSign(String fullString, String prefix) {
+        return fullString.replace(prefix, "");
     }
 
     /**

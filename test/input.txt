@@ -61,6 +61,15 @@
   # find multiple with some keywords
   find Charlie Betsy
 
+  # find with all lower case 
+  find charlie
+  #find multiple with all lower case
+  find betsy dickson
+  # find with both lower and upper case characters
+  find bEtSy
+  #find multiple with lower and upper case characters
+  find BeTsy cHarLie
+
 ##########################################################
 # test delete person command
 ##########################################################
